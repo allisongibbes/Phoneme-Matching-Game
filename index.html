@@ -1,108 +1,210 @@
 <style>
-  .comparison-widget {
-    position: relative;
-    width: 100%;
+  .phoneme-widget {
+    font-family: Arial, sans-serif;
     max-width: 800px;
     margin: 20px auto;
-    overflow: hidden;
+    padding: 20px;
     border: 2px solid #333;
     border-radius: 8px;
-    background-color: #000;
+    background-color: #f4f4f4;
+    text-align: center;
   }
-  .comparison-widget img {
-    display: block;
-    width: 100%;
-    height: auto;
-    pointer-events: none;
-    user-select: none;
+
+  .audio-container {
+    margin-bottom: 20px;
   }
-  .image-storyboard {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    clip-path: inset(0 50% 0 0);
-    -webkit-clip-path: inset(0 50% 0 0);
+
+  .mouth-bank {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+    min-height: 120px;
+    padding: 15px;
+    background: #fff;
+    border: 2px dashed #999;
+    border-radius: 8px;
   }
-  .slider-input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: ew-resize;
-    z-index: 10;
-    margin: 0;
+
+  .timeline {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
   }
-  .slider-line {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 4px;
-    height: 100%;
-    background: white;
-    transform: translateX(-50%);
-    z-index: 5;
-    pointer-events: none;
-    box-shadow: 0 0 10px rgba(0,0,0,0.8);
+
+  .timeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  .slider-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 44px;
-    height: 44px;
-    background: white;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 5;
-    pointer-events: none;
+
+  .drop-slot {
+    width: 100px;
+    height: 100px;
+    border: 2px dashed #666;
+    border-radius: 8px;
+    background: #e0e0e0;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: background 0.2s, border-color 0.2s;
   }
-  .slider-button::before, .slider-button::after {
-    content: '';
-    width: 0;
-    height: 0;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
+
+  .drop-slot.drag-over {
+    background: #c8e6c9; /* Light green when hovering */
+    border-color: #2e7d32;
   }
-  .slider-button::before {
-    border-right: 8px solid #333;
-    margin-right: 4px;
+
+  .phoneme {
+    width: 90px;
+    height: 90px;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 12px;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+    user-select: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
-  .slider-button::after {
-    border-left: 8px solid #333;
-    margin-left: 4px;
+
+  .phoneme:active {
+    cursor: grabbing;
+    opacity: 0.5;
+  }
+
+  /* Image styling if you replace the text with actual mouth images */
+  .phoneme img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+    pointer-events: none; /* Prevents the image from interfering with the drag action */
+  }
+
+  .slot-label {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 8px;
+    font-weight: bold;
+  }
+
+  .reset-btn {
+    margin-top: 25px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .reset-btn:hover {
+    background-color: #555;
   }
 </style>
 
-<div class="comparison-widget">
-  <img src="https://via.placeholder.com/800x450/4CAF50/FFFFFF?text=Final+Animated+Frame" alt="Final Animated Frame" class="image-final">
-  <img src="https://via.placeholder.com/800x450/9E9E9E/FFFFFF?text=Storyboard+Sketch" alt="Storyboard Sketch" class="image-storyboard" id="storyboardOverlay">
-  <div class="slider-line" id="dragLine"></div>
-  <div class="slider-button" id="dragBtn"></div>
-  <input type="range" min="0" max="100" value="50" class="slider-input" id="interactionSlider">
+<div class="phoneme-widget">
+  <h2>Animation Timing: "B-OO-M"</h2>
+  
+  <div class="audio-container">
+    <!-- Replace the src with a link to your actual audio file -->
+    <audio controls id="wordAudio">
+      <source src="YOUR_AUDIO_FILE_LINK_HERE.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+  
+  <p>Listen to the audio, then drag the correct mouth shapes into the timeline to match the syllables.</p>
+  
+  <!-- The bank where draggable items start -->
+  <div class="mouth-bank" id="mouthBank">
+    <!-- To use images instead of text, replace the text inside these divs with <img src="link.jpg"> -->
+    <div class="phoneme" draggable="true" id="mouthM">"M" Shape</div>
+    <div class="phoneme" draggable="true" id="mouthB">"B" Shape</div>
+    <div class="phoneme" draggable="true" id="mouthO">"OO" Shape</div>
+    <div class="phoneme" draggable="true" id="mouthA">"A" Shape</div>
+  </div>
+
+  <!-- The timeline where items are dropped -->
+  <div class="timeline" id="timeline">
+    <div class="timeline-step">
+      <div class="drop-slot" data-slot="1"></div>
+      <div class="slot-label">Sound 1</div>
+    </div>
+    <div class="timeline-step">
+      <div class="drop-slot" data-slot="2"></div>
+      <div class="slot-label">Sound 2</div>
+    </div>
+    <div class="timeline-step">
+      <div class="drop-slot" data-slot="3"></div>
+      <div class="slot-label">Sound 3</div>
+    </div>
+  </div>
+  
+  <button class="reset-btn" onclick="resetGame()">Reset Board</button>
 </div>
 
 <script>
-  const slider = document.getElementById('interactionSlider');
-  const storyboard = document.getElementById('storyboardOverlay');
-  const dragLine = document.getElementById('dragLine');
-  const dragBtn = document.getElementById('dragBtn');
+  const phonemes = document.querySelectorAll('.phoneme');
+  const dropSlots = document.querySelectorAll('.drop-slot');
+  const mouthBank = document.getElementById('mouthBank');
+  
+  let draggedItem = null;
 
-  slider.addEventListener('input', (event) => {
-    const sliderValue = event.target.value;
-    const clipValue = `inset(0 ${100 - sliderValue}% 0 0)`;
-    
-    storyboard.style.clipPath = clipValue;
-    storyboard.style.webkitClipPath = clipValue;
-    
-    dragLine.style.left = `${sliderValue}%`;
-    dragBtn.style.left = `${sliderValue}%`;
+  // Add drag events to the mouth shapes
+  phonemes.forEach(item => {
+    item.addEventListener('dragstart', function(e) {
+      draggedItem = item;
+      // Small timeout to allow the drag ghost to generate before hiding the original
+      setTimeout(() => item.style.display = 'none', 0);
+    });
+
+    item.addEventListener('dragend', function() {
+      setTimeout(() => {
+        draggedItem.style.display = 'flex';
+        draggedItem = null;
+      }, 0);
+    });
   });
+
+  // Add drop events to the timeline slots
+  dropSlots.forEach(slot => {
+    slot.addEventListener('dragover', function(e) {
+      e.preventDefault(); // Required to allow dropping
+      this.classList.add('drag-over');
+    });
+
+    slot.addEventListener('dragleave', function(e) {
+      this.classList.remove('drag-over');
+    });
+
+    slot.addEventListener('drop', function(e) {
+      this.classList.remove('drag-over');
+      // Only allow dropping if the slot is empty
+      if (this.children.length === 0) { 
+        this.append(draggedItem);
+      }
+    });
+  });
+
+  // Allow dragging items back to the starting bank
+  mouthBank.addEventListener('dragover', function(e) {
+    e.preventDefault();
+  });
+  
+  mouthBank.addEventListener('drop', function(e) {
+    this.append(draggedItem);
+  });
+
+  // Reset function to return all mouths to the top bank
+  function resetGame() {
+    const allPhonemes = document.querySelectorAll('.phoneme');
+    allPhonemes.forEach(p => mouthBank.append(p));
+  }
 </script>
